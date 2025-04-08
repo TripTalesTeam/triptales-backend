@@ -7,6 +7,8 @@ import (
 )
 
 func main() {
+	config.LoadEnv()
+	
 	config.InitDB()
 
 	// Auto migrate tables
