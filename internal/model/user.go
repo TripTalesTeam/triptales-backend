@@ -10,7 +10,7 @@ import (
 type User struct {
 	ID           string `gorm:"primaryKey;type:char(36)" json:"user_id"`
 	Username     string `gorm:"unique;not null" json:"username"`
-	Password     string `gorm:"not null" json:"password"` // Using json:"-" to prevent password from appearing in JSON responses
+	Password     string `gorm:"not null" json:"-"` // Using json:"-" to prevent password from appearing in JSON responses
 	Email        string `gorm:"unique;not null" json:"email"`
 	ProfileImage string `json:"profile_image"`
 

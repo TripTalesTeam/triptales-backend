@@ -7,7 +7,9 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func SetupRouter(authService *service.AuthService, userService *service.UserService, countryService *service.CountryService, tripService *service.TripService, tripCompanionService *service.TripCompanionService) *gin.Engine {
+func SetupRouter(authService *service.AuthService, userService *service.UserService, countryService *service.CountryService, tripService *service.TripService,
+	tripCompanionService *service.TripCompanionService, friendService *service.FriendService) *gin.Engine {
+
 	r := gin.Default()
 
 	// Auth routes
@@ -16,6 +18,7 @@ func SetupRouter(authService *service.AuthService, userService *service.UserServ
 	countryHandler := handler.NewCountryHandler(countryService)
 	tripHandler := handler.NewTripHandler(tripService)
 	tripCompanionHandler := handler.NewTripCompanionHandler(tripCompanionService)
+	friendHandler := handler.NewFriendHandler(friendService)
 	authGroup := r.Group("/api/auth")
 	{
 		authGroup.POST("/register", authHandler.Register)
@@ -63,6 +66,12 @@ func SetupRouter(authService *service.AuthService, userService *service.UserServ
 			tripCompanion.POST("", tripCompanionHandler.AddCompanion)
 			tripCompanion.DELETE("/:tripId/:userId", tripCompanionHandler.RemoveCompanion)
 			tripCompanion.GET("/:tripId", tripCompanionHandler.GetCompanions)
+		}
+		friend := api.Group("/friends")
+		{
+			friend.POST("/", friendHandler.AddFriend)
+			friend.GET("/", friendHandler.GetFriends)
+			friend.DELETE("/:friend_id", friendHandler.RemoveFriend)
 		}
 	}
 
