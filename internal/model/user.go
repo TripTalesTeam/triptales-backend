@@ -8,16 +8,16 @@ import (
 
 // User represents a user.
 type User struct {
-	ID       string `gorm:"primaryKey;type:char(36)" json:"user_id"`
+	ID           string `gorm:"primaryKey;type:char(36)" json:"user_id"`
 	Username     string `gorm:"unique;not null" json:"username"`
 	Password     string `gorm:"not null" json:"password"` // Using json:"-" to prevent password from appearing in JSON responses
 	Email        string `gorm:"unique;not null" json:"email"`
 	ProfileImage string `json:"profile_image"`
 
-	Trips      []Trip          `gorm:"foreignKey:UserID" json:"trips"`      // One-to-many relation with Trip
-	Friends    []Friend        `gorm:"foreignKey:UserID" json:"friends"`    // Many-to-many relation with Friend
-	Companions []TripCompanion `gorm:"foreignKey:UserID" json:"companions"` // Many-to-many relation with TripCompanion
-	Bookmarks  []Bookmark      `gorm:"foreignKey:UserID" json:"bookmarks"`  // One-to-many relation with Bookmark
+	Trips      []Trip          `gorm:"foreignKey:UserID;constraint:OnDelete:CASCADE;" json:"trips"` // One-to-many relation with Trip
+	Friends    []Friend        `gorm:"foreignKey:UserID;constraint:OnDelete:CASCADE;" json:"friends"`                            // Many-to-many relation with Friend
+	Companions []TripCompanion `gorm:"foreignKey:UserID;constraint:OnDelete:CASCADE;" json:"companions"`                         // Many-to-many relation with TripCompanion
+	Bookmarks  []Bookmark      `gorm:"foreignKey:UserID;constraint:OnDelete:CASCADE;" json:"bookmarks"`                          // One-to-many relation with Bookmark
 }
 
 // BeforeCreate will set a UUID rather than numeric ID and hash the password

@@ -5,6 +5,6 @@ type Friend struct {
 	FriendID string `gorm:"primaryKey;type:char(36)" json:"friend_id"`
 	UserID   string `gorm:"primaryKey;type:char(36)" json:"user_id"`
 
-	User   User `gorm:"foreignKey:UserID;references:ID" json:"user"`     // Foreign key relation for user
-	Friend User `gorm:"foreignKey:FriendID;references:ID" json:"friend"` // Foreign key relation for friend
+	User   User `gorm:"foreignKey:UserID;references:ID;constraint:OnDelete:CASCADE;" json:"user"`     // Foreign key relation for user
+	Friend User `gorm:"foreignKey:FriendID;references:ID;constraint:OnDelete:CASCADE;" json:"friend"` // Foreign key relation for friend
 }

@@ -16,7 +16,7 @@ type Trip struct {
 	Longitude   float64 `gorm:"" json:"longitude"`
 	Image       string  `gorm:"" json:"image"`
 
-	User    User    `gorm:"foreignKey:UserID;references:ID" json:"user"`          // Foreign key relation for user
+	User User `gorm:"foreignKey:UserID;references:ID;constraint:OnDelete:CASCADE;" json:"user"` // Foreign key relation for user
 	Country Country `gorm:"foreignKey:CountryID;references:ID" json:"country"` // Foreign key relation for country
 
 	Companions []TripCompanion `gorm:"foreignKey:TripID;constraint:OnDelete:CASCADE;" json:"companions"` // Many-to-many relation with TripCompanion

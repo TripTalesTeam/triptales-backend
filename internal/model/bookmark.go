@@ -6,6 +6,6 @@ type Bookmark struct {
 	UserID     string `gorm:"type:char(36);not null" json:"user_id"`
 	TripID     string `gorm:"type:char(36);not null" json:"trip_id"`
 
-	User User `gorm:"foreignKey:UserID;references:ID" json:"user"`
-	Trip Trip `gorm:"foreignKey:TripID;references:ID" json:"trip"`
+	User User `gorm:"foreignKey:UserID;references:ID;constraint:OnDelete:CASCADE;" json:"user"`
+	Trip Trip `gorm:"foreignKey:TripID;references:ID;constraint:OnDelete:CASCADE;" json:"trip"`
 }

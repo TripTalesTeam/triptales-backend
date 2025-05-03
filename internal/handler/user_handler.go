@@ -25,3 +25,16 @@ func (u *UserHandler) GetUsers(c *gin.Context) {
 	}
 	c.JSON(http.StatusOK, users)
 }
+
+
+func (u *UserHandler) DeleteUser(c *gin.Context) {
+	id := c.Param("id")
+
+	// Proceed with deletion
+	if err := u.UserService.DeleteUser(id); err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"message": "User deleted successfully"})
+}

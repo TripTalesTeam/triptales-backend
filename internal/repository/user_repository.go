@@ -71,3 +71,7 @@ func (r *UserRepository) Update(user *model.User) error {
 func (r *UserRepository) UpdateProfileImage(userID string, imagePath string) error {
 	return r.DB.Model(&model.User{}).Where("id = ?", userID).Update("profile_image", imagePath).Error
 }
+
+func (r *UserRepository) Delete(id string) error {
+	return r.DB.Delete(&model.User{}, "id = ?", id).Error
+}

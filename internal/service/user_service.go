@@ -17,3 +17,7 @@ func NewUserService(userRepo *repository.UserRepository) *UserService{
 func (u *UserService) GetUsers() ([]model.User, error) {
 	return u.UserRepo.GetAllUsers()
 }
+
+func (u *UserService) DeleteUser(id string) error {
+	return u.UserRepo.Delete(id)
+}

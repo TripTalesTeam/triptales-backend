@@ -36,6 +36,7 @@ func SetupRouter(authService *service.AuthService, userService *service.UserServ
 		user := api.Group("/users")
 		{
 			user.GET("/", userHandler.GetUsers)
+			user.DELETE("/:id", userHandler.DeleteUser)
 		}
 
 		country := api.Group("/countries")
