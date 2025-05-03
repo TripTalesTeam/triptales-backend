@@ -4,14 +4,14 @@ import (
 	"errors"
 	"path/filepath"
 	"time"
-	"github.com/breezjirasak/triptales/internal/model" // Replace with your actual model package path
+	"github.com/breezjirasak/triptales/internal/model"
 	"github.com/breezjirasak/triptales/internal/auth"
+	"github.com/breezjirasak/triptales/internal/repository"
 	"github.com/google/uuid"
-	"gorm.io/gorm"
 )
 
 type AuthService struct {
-	DB *gorm.DB
+	UserRepo *repository.UserRepository
 }
 
 type RegisterRequest struct {
@@ -34,20 +34,27 @@ type AuthResponse struct {
 }
 
 // NewAuthService creates a new instance of AuthService
-func NewAuthService(db *gorm.DB) *AuthService {
-	return &AuthService{DB: db}
+func NewAuthService(userRepo *repository.UserRepository) *AuthService {
+	return &AuthService{UserRepo: userRepo}
 }
 
 // Register creates a new user account
 func (s *AuthService) Register(req RegisterRequest) (*AuthResponse, error) {
 	// Check if username exists
-	var existingUser model.User
-	if result := s.DB.Where("username = ?", req.Username).First(&existingUser); result.RowsAffected > 0 {
+	existingUser, err := s.UserRepo.FindByUsername(req.Username)
+	if err != nil {
+		return nil, err
+	}
+	if existingUser != nil {
 		return nil, errors.New("username already exists")
 	}
 
 	// Check if email exists
-	if result := s.DB.Where("email = ?", req.Email).First(&existingUser); result.RowsAffected > 0 {
+	existingUser, err = s.UserRepo.FindByEmail(req.Email)
+	if err != nil {
+		return nil, err
+	}
+	if existingUser != nil {
 		return nil, errors.New("email already exists")
 	}
 
@@ -60,7 +67,7 @@ func (s *AuthService) Register(req RegisterRequest) (*AuthResponse, error) {
 		ProfileImage: req.ProfileImage,
 	}
 
-	if err := s.DB.Create(&user).Error; err != nil {
+	if err := s.UserRepo.Create(&user); err != nil {
 		return nil, err
 	}
 
@@ -83,12 +90,12 @@ func (s *AuthService) Register(req RegisterRequest) (*AuthResponse, error) {
 // Login authenticates a user and returns a token
 func (s *AuthService) Login(req LoginRequest) (*AuthResponse, error) {
 	// Find user by username
-	var user model.User
-	if result := s.DB.Where("username = ?", req.Username).First(&user); result.Error != nil {
-		if errors.Is(result.Error, gorm.ErrRecordNotFound) {
-			return nil, errors.New("invalid username or password")
-		}
-		return nil, result.Error
+	user, err := s.UserRepo.FindByUsername(req.Username)
+	if err != nil {
+		return nil, err
+	}
+	if user == nil {
+		return nil, errors.New("invalid username or password")
 	}
 
 	// Check password
@@ -107,22 +114,19 @@ func (s *AuthService) Login(req LoginRequest) (*AuthResponse, error) {
 
 	return &AuthResponse{
 		Token:    token,
-		User:     user,
+		User:     *user,
 		ExpireAt: time.Now().Add(24 * time.Hour),
 	}, nil
 }
 
 // UploadProfileImage handles the profile image upload
 func (s *AuthService) UploadProfileImage(userID string, filename string) (string, error) {
-	// In a production app, you'd save the file to a storage service and return the URL
-	// For simplicity, we'll just assume it's stored locally in an uploads directory
-	
 	// Generate a unique filename to prevent collisions
 	uniqueFilename := uuid.New().String() + filepath.Ext(filename)
 	imagePath := "/uploads/profiles/" + uniqueFilename
 	
 	// Update the user's profile image in the database
-	if err := s.DB.Model(&model.User{}).Where("id = ?", userID).Update("profile_image", imagePath).Error; err != nil {
+	if err := s.UserRepo.UpdateProfileImage(userID, imagePath); err != nil {
 		return "", err
 	}
 	
@@ -131,13 +135,13 @@ func (s *AuthService) UploadProfileImage(userID string, filename string) (string
 
 // GetUserByID retrieves user details by ID
 func (s *AuthService) GetUserByID(userID string) (*model.User, error) {
-	var user model.User
-	if err := s.DB.Where("id = ?", userID).First(&user).Error; err != nil {
+	user, err := s.UserRepo.FindByID(userID)
+	if err != nil {
 		return nil, err
 	}
 	
 	// Remove sensitive information
 	user.Password = ""
 	
-	return &user, nil
+	return user, nil
 }

@@ -7,14 +7,12 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func SetupRouter(authService *service.AuthService) *gin.Engine {
+func SetupRouter(authService *service.AuthService, userService *service.UserService) *gin.Engine {
 	r := gin.Default()
-
-	// Public routes
-	r.GET("/users", handler.GetUsers)
 	
 	// Auth routes
 	authHandler := handler.NewAuthHandler(authService)
+	userHandler := handler.NewUserHandler(userService)
 	authGroup := r.Group("/api/auth")
 	{
 		authGroup.POST("/register", authHandler.Register)
@@ -33,6 +31,7 @@ func SetupRouter(authService *service.AuthService) *gin.Engine {
 	api := r.Group("/api")
 	api.Use(middleware.JWTMiddleware())
 	{
+		r.GET("/users", userHandler.GetUsers)
 		// Protected routes go here
 		// api.GET("/protected-resource", handler.ProtectedResource)
 		

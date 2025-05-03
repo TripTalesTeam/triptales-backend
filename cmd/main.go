@@ -6,6 +6,7 @@ import (
 
 	"github.com/breezjirasak/triptales/config"
 	"github.com/breezjirasak/triptales/internal/service"
+	"github.com/breezjirasak/triptales/internal/repository"
 	"github.com/breezjirasak/triptales/internal/model"
 	"github.com/breezjirasak/triptales/internal/route"
 )
@@ -34,16 +35,15 @@ func main() {
 		log.Println("WARNING: Using default JWT secret key. Set JWT_SECRET_KEY environment variable in production.")
 	}
 
-	// Create uploads directory if it doesn't exist
-	// if err := os.MkdirAll("uploads/profiles", 0755); err != nil {
-	// 	log.Fatalf("Failed to create uploads directory: %v", err)
-	// }
+	// Create a repository instance
+	userRepo := repository.NewUserRepository(config.DB)
 
-	// Initialize auth service
-	authService := service.NewAuthService(config.DB)
+	// Create a service instance using the repository
+	authService := service.NewAuthService(userRepo)
+	userService := service.NewUserService(userRepo)
 
 	// Set up router with auth service
-	r := route.SetupRouter(authService)
+	r := route.SetupRouter(authService, userService)
 	
 	// Start server
 	log.Println("Server starting on port 8080...")

@@ -5,10 +5,15 @@ import (
 	"github.com/breezjirasak/triptales/internal/repository"
 )
 
-func GetUsers() []model.User {
-	return repository.GetAllUsers()
+type UserService struct {
+	UserRepo *repository.UserRepository
 }
 
-func AddUser(user model.User) model.User {
-	return repository.CreateUser(user)
+func NewUserService(userRepo *repository.UserRepository) *UserService{
+	return &UserService{UserRepo: userRepo}
+
+}
+
+func (u *UserService) GetUsers() ([]model.User, error) {
+	return u.UserRepo.GetAllUsers()
 }
