@@ -7,12 +7,13 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func SetupRouter(authService *service.AuthService, userService *service.UserService) *gin.Engine {
+func SetupRouter(authService *service.AuthService, userService *service.UserService, countryService *service.CountryService) *gin.Engine {
 	r := gin.Default()
 	
 	// Auth routes
 	authHandler := handler.NewAuthHandler(authService)
 	userHandler := handler.NewUserHandler(userService)
+	countryHandler := handler.NewCountryHandler(countryService)
 	authGroup := r.Group("/api/auth")
 	{
 		authGroup.POST("/register", authHandler.Register)
@@ -31,12 +32,21 @@ func SetupRouter(authService *service.AuthService, userService *service.UserServ
 	api := r.Group("/api")
 	api.Use(middleware.JWTMiddleware())
 	{
-		r.GET("/users", userHandler.GetUsers)
-		// Protected routes go here
-		// api.GET("/protected-resource", handler.ProtectedResource)
-		
-		// You can add your other protected routes here
-		// e.g., api.GET("/trips", tripHandler.GetTrips)
+		user := api.Group("/users")
+		{
+			user.GET("/", userHandler.GetUsers)
+		}
+
+
+		country := api.Group("/countries")
+		{
+			country.POST("/", countryHandler.CreateCountry)
+			country.GET("/", countryHandler.GetAllCountries)
+			country.GET("/by-name", countryHandler.GetCountryByName)
+			country.GET("/:id", countryHandler.GetCountryByID)
+			country.PUT("/", countryHandler.UpdateCountry)
+			country.DELETE("/:id", countryHandler.DeleteCountry)
+		}
 	}
 
 	return r
