@@ -41,6 +41,7 @@ func main() {
 	tripRepo := repository.NewTripRepository(config.DB)
 	tripCompanionRepo := repository.NewTripCompanionRepository(config.DB)
 	friendRepo := repository.NewFriendRepository(config.DB)
+	bookmarkRepo := repository.NewBookmarkRepository(config.DB)
 
 	// Create a service instance using the repository
 	authService := service.NewAuthService(userRepo)
@@ -49,9 +50,10 @@ func main() {
 	tripService := service.NewTripService(tripRepo)
 	tripCompanionService := service.NewTripCompanionService(tripCompanionRepo)
 	friendService := service.NewFriendService(friendRepo)
+	bookmarkService := service.NewBookmarkService(bookmarkRepo)
 
 	// Set up router with auth service
-	r := route.SetupRouter(authService, userService, countryService, tripService, tripCompanionService, friendService)
+	r := route.SetupRouter(authService, userService, countryService, tripService, tripCompanionService, friendService, bookmarkService)
 	
 	// Start server
 	log.Println("Server starting on port 8080...")

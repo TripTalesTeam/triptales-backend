@@ -20,7 +20,7 @@ type Trip struct {
 	Country Country `gorm:"foreignKey:CountryID;references:ID" json:"country"` // Foreign key relation for country
 
 	Companions []TripCompanion `gorm:"foreignKey:TripID;constraint:OnDelete:CASCADE;" json:"companions"` // Many-to-many relation with TripCompanion
-	Bookmarks  []Bookmark      `gorm:"foreignKey:TripID" json:"bookmarks"`  // One-to-many relation with Bookmark
+	Bookmarks  []Bookmark      `gorm:"foreignKey:TripID;constraint:OnDelete:CASCADE;" json:"bookmarks"`  // One-to-many relation with Bookmark
 }
 
 func (t *Trip) BeforeCreate(tx *gorm.DB) error {

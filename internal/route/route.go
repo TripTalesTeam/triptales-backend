@@ -8,7 +8,7 @@ import (
 )
 
 func SetupRouter(authService *service.AuthService, userService *service.UserService, countryService *service.CountryService, tripService *service.TripService,
-	tripCompanionService *service.TripCompanionService, friendService *service.FriendService) *gin.Engine {
+	tripCompanionService *service.TripCompanionService, friendService *service.FriendService, bookmarkService *service.BookmarkService) *gin.Engine {
 
 	r := gin.Default()
 
@@ -19,6 +19,7 @@ func SetupRouter(authService *service.AuthService, userService *service.UserServ
 	tripHandler := handler.NewTripHandler(tripService)
 	tripCompanionHandler := handler.NewTripCompanionHandler(tripCompanionService)
 	friendHandler := handler.NewFriendHandler(friendService)
+	bookmarkHandler := handler.NewBookmarkHandler(bookmarkService)
 	authGroup := r.Group("/api/auth")
 	{
 		authGroup.POST("/register", authHandler.Register)
@@ -72,6 +73,13 @@ func SetupRouter(authService *service.AuthService, userService *service.UserServ
 			friend.POST("/", friendHandler.AddFriend)
 			friend.GET("/", friendHandler.GetFriends)
 			friend.DELETE("/:friend_id", friendHandler.RemoveFriend)
+		}
+
+		bookmark := api.Group("/bookmarks")
+		{
+			bookmark.POST("/", bookmarkHandler.AddBookmark)
+			bookmark.DELETE("/:id", bookmarkHandler.RemoveBookmark)
+			bookmark.GET("/", bookmarkHandler.GetBookmarks)
 		}
 	}
 
