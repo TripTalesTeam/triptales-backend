@@ -2,7 +2,7 @@ package model
 
 // TripCompanion represents users who are companions on a trip (many-to-many).
 type TripCompanion struct {
-	TripID string `gorm:"primaryKey;type:char(36)" json:"trip_id"`
+	TripID string `gorm:"primaryKey;type:char(36);constraint:OnDelete:CASCADE;" json:"trip_id"`
 	UserID string `gorm:"primaryKey;type:char(36)" json:"user_id"`	
 
 	Trip Trip `gorm:"foreignKey:TripID;references:ID" json:"trip"` // Foreign key relation for trip

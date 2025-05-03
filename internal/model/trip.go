@@ -19,7 +19,7 @@ type Trip struct {
 	User    User    `gorm:"foreignKey:UserID;references:ID" json:"user"`          // Foreign key relation for user
 	Country Country `gorm:"foreignKey:CountryID;references:ID" json:"country"` // Foreign key relation for country
 
-	Companions []TripCompanion `gorm:"foreignKey:TripID" json:"companions"` // Many-to-many relation with TripCompanion
+	Companions []TripCompanion `gorm:"foreignKey:TripID;constraint:OnDelete:CASCADE;" json:"companions"` // Many-to-many relation with TripCompanion
 	Bookmarks  []Bookmark      `gorm:"foreignKey:TripID" json:"bookmarks"`  // One-to-many relation with Bookmark
 }
 

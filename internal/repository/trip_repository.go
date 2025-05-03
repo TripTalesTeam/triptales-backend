@@ -37,5 +37,5 @@ func (r *TripRepository) Update(trip *model.Trip) error {
 }
 
 func (r *TripRepository) Delete(id string) error {
-	return r.DB.Where("id = ?", id).Delete(&model.Country{}).Error
+	return r.DB.Delete(&model.Trip{}, "id = ?", id).Error
 }
