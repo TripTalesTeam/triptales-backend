@@ -7,13 +7,14 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func SetupRouter(authService *service.AuthService, userService *service.UserService, countryService *service.CountryService) *gin.Engine {
+func SetupRouter(authService *service.AuthService, userService *service.UserService, countryService *service.CountryService, tripService *service.TripService) *gin.Engine {
 	r := gin.Default()
 	
 	// Auth routes
 	authHandler := handler.NewAuthHandler(authService)
 	userHandler := handler.NewUserHandler(userService)
 	countryHandler := handler.NewCountryHandler(countryService)
+	tripHandler := handler.NewTripHandler(tripService)
 	authGroup := r.Group("/api/auth")
 	{
 		authGroup.POST("/register", authHandler.Register)
@@ -24,7 +25,6 @@ func SetupRouter(authService *service.AuthService, userService *service.UserServ
 		protected.Use(middleware.JWTMiddleware())
 		{
 			protected.GET("/me", authHandler.GetMe)
-			protected.POST("/profile-image", authHandler.UploadProfileImage)
 		}
 	}
 	
@@ -46,6 +46,15 @@ func SetupRouter(authService *service.AuthService, userService *service.UserServ
 			country.GET("/:id", countryHandler.GetCountryByID)
 			country.PUT("/", countryHandler.UpdateCountry)
 			country.DELETE("/:id", countryHandler.DeleteCountry)
+		}
+
+		trip := api.Group("/trips")
+		{
+			trip.POST("/", tripHandler.CreateTrip)
+			trip.GET("/", tripHandler.GetAllTrips)
+			trip.GET("/:id", tripHandler.GetTripByID)
+			trip.PUT("/:id", tripHandler.UpdateTrip)
+			trip.DELETE("/:id", tripHandler.DeleteTrip)
 		}
 	}
 

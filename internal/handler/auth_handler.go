@@ -2,11 +2,8 @@ package handler
 
 import (
 	"net/http"
-	"path/filepath"
 	"github.com/breezjirasak/triptales/internal/service"
-	"github.com/breezjirasak/triptales/internal/middleware"
 	"github.com/gin-gonic/gin"
-	"github.com/google/uuid"
 )
 
 type AuthHandler struct {
@@ -60,49 +57,6 @@ func (h *AuthHandler) Login(c *gin.Context) {
 	c.JSON(http.StatusOK, response)
 }
 
-// UploadProfileImage handles profile image uploads
-func (h *AuthHandler) UploadProfileImage(c *gin.Context) {
-	// Extract user ID from JWT claim
-	userID, exists := c.Get("userID")
-	if !exists {
-		c.JSON(http.StatusUnauthorized, gin.H{"error": "unauthorized"})
-		return
-	}
-	
-	// Get the file from form data
-	file, err := c.FormFile("profile_image")
-	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "no file uploaded"})
-		return
-	}
-	
-	// Check file extension
-	ext := filepath.Ext(file.Filename)
-	if ext != ".jpg" && ext != ".jpeg" && ext != ".png" && ext != ".gif" {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "only jpg, jpeg, png, and gif images are allowed"})
-		return
-	}
-	
-	// Generate a unique filename
-	filename := uuid.New().String() + ext
-	
-	// Save the file
-	dst := filepath.Join("./uploads/profiles", filename)
-	if err := c.SaveUploadedFile(file, dst); err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "failed to save file"})
-		return
-	}
-	
-	// Update the user's profile image in the database
-	imagePath, err := h.AuthService.UploadProfileImage(userID.(string), filename)
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "failed to update profile image"})
-		return
-	}
-	
-	c.JSON(http.StatusOK, gin.H{"profile_image": imagePath})
-}
-
 // GetMe returns the current user's information
 func (h *AuthHandler) GetMe(c *gin.Context) {
 	// Extract user ID from JWT claim
@@ -119,20 +73,4 @@ func (h *AuthHandler) GetMe(c *gin.Context) {
 	}
 	
 	c.JSON(http.StatusOK, user)
-}
-
-// RegisterRoutes registers auth routes to the provided router
-func (h *AuthHandler) RegisterRoutes(router *gin.Engine) {
-	authGroup := router.Group("/api/auth")
-	{
-		authGroup.POST("/register", h.Register)
-		authGroup.POST("/login", h.Login)
-		
-		// Protected routes
-		authGroup.Use(middleware.JWTMiddleware())
-		{
-			authGroup.GET("/me", h.GetMe)
-			authGroup.POST("/profile-image", h.UploadProfileImage)
-		}
-	}
 }

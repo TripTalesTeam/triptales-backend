@@ -77,9 +77,23 @@ func (h *CountryHandler) UpdateCountry(c *gin.Context) {
 
 func (h *CountryHandler) DeleteCountry(c *gin.Context) {
 	id := c.Param("id")
-	if err := h.Service.DeleteCountry(id); err != nil {
-		c.JSON(http.StatusNotFound, gin.H{"error": err.Error()})
+
+	// Check if the country exists before attempting to delete
+	country, err := h.Service.GetCountryByID(id)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "failed to check country existence"})
 		return
 	}
+	if country == nil {
+		c.JSON(http.StatusNotFound, gin.H{"error": "country not found"})
+		return
+	}
+
+	if err := h.Service.DeleteCountry(id); err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
 	c.JSON(http.StatusOK, gin.H{"message": "country deleted successfully"})
 }
+
