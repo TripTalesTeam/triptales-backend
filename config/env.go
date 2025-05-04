@@ -2,14 +2,16 @@
 package config
 
 import (
-	"log"
-
 	"github.com/joho/godotenv"
+	"log"
+	"os"
 )
 
 func LoadEnv() {
-	err := godotenv.Load("../.env")
-	if err != nil {
-		log.Println("Warning: No .env file found, relying on system environment variables")
+	if os.Getenv("PRODUCTION") != "true" {
+		err := godotenv.Load("../.env")
+		if err != nil {
+			log.Println("Warning: No .env file found, relying on system environment variables")
+		}
 	}
 }
