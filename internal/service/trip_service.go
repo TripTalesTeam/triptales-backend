@@ -29,6 +29,10 @@ func (s *TripService) GetAllTrips() ([]model.Trip, error) {
 	return s.TripRepo.FindAll()
 }
 
+func (s *TripService) GetAllFriendTrips(id string) ([]model.Trip, error) {
+	return s.TripRepo.FindByFriendTrips(id)
+}
+
 func (s *TripService) UpdateTrip(trip *model.Trip) error {
 	return s.TripRepo.Update(trip)
 }

@@ -39,3 +39,15 @@ func (r *TripRepository) Update(trip *model.Trip) error {
 func (r *TripRepository) Delete(id string) error {
 	return r.DB.Delete(&model.Trip{}, "id = ?", id).Error
 }
+
+func (r *TripRepository) FindByFriendTrips(userId string) ([]model.Trip, error) {
+	var trips []model.Trip
+	err := r.DB.
+		Preload("User").       // Load the trip creator's information
+		Preload("Country").    // Load the country information
+		Preload("Companions"). // Load companions if needed
+		Joins("JOIN friends ON trips.user_id = friends.friend_id").
+		Where("friends.user_id = ?", userId).
+		Find(&trips).Error
+	return trips, err
+}
