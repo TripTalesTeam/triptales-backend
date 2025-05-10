@@ -30,6 +30,10 @@ func (h *FriendHandler) AddFriend(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
+	if err := h.Service.AddFriend(req.FriendID, userID); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
 	c.JSON(http.StatusCreated, gin.H{"message": "Friend added"})
 }
 
