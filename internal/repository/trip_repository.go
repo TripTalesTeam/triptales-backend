@@ -3,6 +3,7 @@ package repository
 import (
 	"github.com/breezjirasak/triptales/internal/model"
 	"gorm.io/gorm"
+	"strings"
 )
 
 type TripRepository struct {
@@ -40,14 +41,20 @@ func (r *TripRepository) Delete(id string) error {
 	return r.DB.Delete(&model.Trip{}, "id = ?", id).Error
 }
 
-func (r *TripRepository) FindByFriendTrips(userId string) ([]model.Trip, error) {
+func (r *TripRepository) FindByFriendTrips(userId string, countryName string) ([]model.Trip, error) {
 	var trips []model.Trip
-	err := r.DB.
-		Preload("User").       // Load the trip creator's information
-		Preload("Country").    // Load the country information
-		Preload("Companions"). // Load companions if needed
+	db := r.DB.
+		Preload("User").
+		Preload("Country").
+		Preload("Companions").
 		Joins("JOIN friends ON trips.user_id = friends.friend_id").
-		Where("friends.user_id = ?", userId).
-		Find(&trips).Error
+		Where("friends.user_id = ?", userId)
+
+	if countryName != "" {
+		db = db.Joins("JOIN countries ON trips.country_id = countries.id").
+			Where("LOWER(countries.name) LIKE ?", "%"+strings.ToLower(countryName)+"%")
+	}
+
+	err := db.Find(&trips).Error
 	return trips, err
 }

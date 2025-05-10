@@ -71,7 +71,10 @@ func (h *TripHandler) GetFriendTrip(c *gin.Context) {
 		return
 	}
 
-	trips, err := h.Service.GetAllFriendTrips(userIDStr)
+	// Get the country name from query parameters
+	countryName := c.Query("country")
+
+	trips, err := h.Service.GetAllFriendTrips(userIDStr, countryName)
 	if err != nil {
 		c.JSON(http.StatusNotFound, gin.H{"error": "trip not found"})
 		return
@@ -79,6 +82,7 @@ func (h *TripHandler) GetFriendTrip(c *gin.Context) {
 
 	c.JSON(http.StatusOK, trips)
 }
+
 
 func (h *TripHandler) UpdateTrip(c *gin.Context) {
 	var trip model.Trip
