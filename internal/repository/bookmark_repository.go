@@ -19,7 +19,7 @@ func (r *BookmarkRepository) Create(bookmark *model.Bookmark) error {
 }
 
 func (r *BookmarkRepository) Delete(id string) error {
-	return r.DB.Where("id = ?", id).Delete(&model.Bookmark{}).Error
+	return r.DB.Where("trip_id = ?", id).Delete(&model.Bookmark{}).Error
 }
 
 func (r *BookmarkRepository) FindByUserID(userID string) ([]model.Bookmark, error) {
