@@ -65,8 +65,9 @@ func (r *TripRepository) FindByBookmarkTrips(userId string, countryName string) 
 		Preload("User").
 		Preload("Country").
 		Preload("Companions").
-		Joins("JOIN bookmarks ON trips.trip_id = bookmarks.trip_id").
-		Where("bookmarks.user_id = ?", userId)
+		Joins("JOIN bookmarks ON trips.id = bookmarks.trip_id").
+		Where("bookmarks.user_id = ?", userId).
+		Select("trips.*")
 
 	if countryName != "" {
 		db = db.Joins("JOIN countries ON trips.country_id = countries.id").
