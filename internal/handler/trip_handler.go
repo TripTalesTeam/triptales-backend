@@ -83,6 +83,31 @@ func (h *TripHandler) GetFriendTrip(c *gin.Context) {
 	c.JSON(http.StatusOK, trips)
 }
 
+func (h *TripHandler) GetBookmarkTrip(c *gin.Context) {
+	userID, exists := c.Get("userID")
+	if !exists {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "userID not found in context"})
+		return
+	}
+
+	userIDStr, ok := userID.(string)
+	if !ok {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Invalid user ID format"})
+		return
+	}
+
+	// Get the country name from query parameters
+	countryName := c.Query("country")
+
+	trips, err := h.Service.GetAllBookmarkTrips(userIDStr, countryName)
+	if err != nil {
+		c.JSON(http.StatusNotFound, gin.H{"error": "trip not found"})
+		return
+	}
+
+	c.JSON(http.StatusOK, trips)
+}
+
 
 func (h *TripHandler) UpdateTrip(c *gin.Context) {
 	var trip model.Trip

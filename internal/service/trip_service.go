@@ -33,6 +33,10 @@ func (s *TripService) GetAllFriendTrips(id string, countryId string) ([]model.Tr
 	return s.TripRepo.FindByFriendTrips(id, countryId)
 }
 
+func (s *TripService) GetAllBookmarkTrips(id string, countryId string) ([]model.Trip, error) {
+	return s.TripRepo.FindByBookmarkTrips(id, countryId)
+}
+
 func (s *TripService) UpdateTrip(trip *model.Trip) error {
 	return s.TripRepo.Update(trip)
 }

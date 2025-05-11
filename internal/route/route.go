@@ -60,6 +60,7 @@ func SetupRouter(authService *service.AuthService, userService *service.UserServ
 			trip.GET("/", tripHandler.GetAllTrips)
 			trip.GET("/:id", tripHandler.GetTripByID)
 			trip.GET("/friend", tripHandler.GetFriendTrip)
+			trip.GET("/bookmark", tripHandler.GetBookmarkTrip)
 			trip.PUT("/:id", tripHandler.UpdateTrip)
 			trip.DELETE("/:id", tripHandler.DeleteTrip)
 		}

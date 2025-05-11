@@ -58,3 +58,21 @@ func (r *TripRepository) FindByFriendTrips(userId string, countryName string) ([
 	err := db.Find(&trips).Error
 	return trips, err
 }
+
+func (r *TripRepository) FindByBookmarkTrips(userId string, countryName string) ([]model.Trip, error) {
+	var trips []model.Trip
+	db := r.DB.
+		Preload("User").
+		Preload("Country").
+		Preload("Companions").
+		Joins("JOIN bookmarks ON trips.trip_id = bookmarks.trip_id").
+		Where("bookmarks.user_id = ?", userId)
+
+	if countryName != "" {
+		db = db.Joins("JOIN countries ON trips.country_id = countries.id").
+			Where("LOWER(countries.name) LIKE ?", "%"+strings.ToLower(countryName)+"%")
+	}
+
+	err := db.Find(&trips).Error
+	return trips, err
+}
