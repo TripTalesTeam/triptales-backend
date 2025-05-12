@@ -85,8 +85,8 @@ func (r *TripRepository) FindByCompanionTrips(userId string) ([]model.Trip, erro
 		Preload("User").
 		Preload("Country").
 		Preload("Companions").
-		Joins("JOIN companions ON trips.id = companions.trip_id").
-		Where("companions.user_id = ?", userId).
+		Joins("JOIN trip_companions ON trips.id = trip_companions.trip_id").
+		Where("trip_companions.user_id = ?", userId).
 		Select("trips.*")
 
 	err := db.Find(&trips).Error
