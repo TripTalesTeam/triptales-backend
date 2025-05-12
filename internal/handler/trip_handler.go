@@ -93,6 +93,10 @@ func (h *TripHandler) GetFriendTrip(c *gin.Context) {
 		return
 	}
 
+	for i, j := 0, len(trips)-1; i < j; i, j = i+1, j-1 {
+		trips[i], trips[j] = trips[j], trips[i]
+	}
+
 	c.JSON(http.StatusOK, trips)
 }
 
@@ -116,6 +120,10 @@ func (h *TripHandler) GetBookmarkTrip(c *gin.Context) {
 	if err != nil {
 		c.JSON(http.StatusNotFound, gin.H{"error": "trip not found"})
 		return
+	}
+
+	for i, j := 0, len(trips)-1; i < j; i, j = i+1, j-1 {
+		trips[i], trips[j] = trips[j], trips[i]
 	}
 
 	c.JSON(http.StatusOK, trips)
