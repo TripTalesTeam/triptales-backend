@@ -27,9 +27,10 @@ func (r *TripRepository) FindByID(id string) (*model.Trip, error) {
 	return &trip, nil
 }
 
-func (r *TripRepository) FindAll() ([]model.Trip, error) {
+func (r *TripRepository) FindAll(id string) ([]model.Trip, error) {
 	var trips []model.Trip
-	err := r.DB.Preload("User").Preload("Country").Preload("Companions").Preload("Bookmarks").Find(&trips).Error
+	err := r.DB.Preload("User").Preload("Country").Preload("Companions").Preload("Bookmarks").Where("trips.user_id = ?", id).
+	Select("trips.*").Find(&trips).Error
 	return trips, err
 }
 

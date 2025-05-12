@@ -50,7 +50,20 @@ func (h *TripHandler) GetTripByID(c *gin.Context) {
 }
 
 func (h *TripHandler) GetAllTrips(c *gin.Context) {
-	trips, err := h.Service.GetAllTrips()
+	userID, exists := c.Get("userID")
+	if !exists {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "userID not found in context"})
+		return
+	}
+
+	userIDStr, ok := userID.(string)
+
+	if !ok {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Invalid user ID format"})
+		return
+	}
+
+	trips, err := h.Service.GetAllTrips(userIDStr)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return

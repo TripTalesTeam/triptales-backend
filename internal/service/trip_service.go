@@ -25,8 +25,8 @@ func (s *TripService) GetTripByID(id string) (*model.Trip, error) {
 	return s.TripRepo.FindByID(id)
 }
 
-func (s *TripService) GetAllTrips() ([]model.Trip, error) {
-	return s.TripRepo.FindAll()
+func (s *TripService) GetAllTrips(id string) ([]model.Trip, error) {
+	return s.TripRepo.FindAll(id)
 }
 
 func (s *TripService) GetAllFriendTrips(id string, countryId string) ([]model.Trip, error) {
