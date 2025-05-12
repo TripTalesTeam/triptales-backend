@@ -3,7 +3,6 @@ package service
 import (
 	"errors"
 	"path/filepath"
-	"time"
 	"github.com/breezjirasak/triptales/internal/model"
 	"github.com/breezjirasak/triptales/internal/auth"
 	"github.com/breezjirasak/triptales/internal/repository"
@@ -30,7 +29,6 @@ type LoginRequest struct {
 type AuthResponse struct {
 	Token    string      `json:"token"`
 	User     model.User  `json:"user"`
-	ExpireAt time.Time   `json:"expire_at"`
 }
 
 // NewAuthService creates a new instance of AuthService
@@ -83,7 +81,6 @@ func (s *AuthService) Register(req RegisterRequest) (*AuthResponse, error) {
 	return &AuthResponse{
 		Token:    token,
 		User:     user,
-		ExpireAt: time.Now().Add(24 * time.Hour),
 	}, nil
 }
 
@@ -115,7 +112,6 @@ func (s *AuthService) Login(req LoginRequest) (*AuthResponse, error) {
 	return &AuthResponse{
 		Token:    token,
 		User:     *user,
-		ExpireAt: time.Now().Add(24 * time.Hour),
 	}, nil
 }
 
