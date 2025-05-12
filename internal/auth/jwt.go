@@ -4,7 +4,6 @@ import (
 	"errors"
 	"fmt"
 	"os"
-	"time"
 
 	"github.com/golang-jwt/jwt/v5"
 )
@@ -15,7 +14,7 @@ type JWTClaims struct {
 	jwt.RegisteredClaims
 }
 
-// GenerateToken creates a new JWT token for a user
+// GenerateToken creates a new JWT token for a user without expiration
 func GenerateToken(userID, username string) (string, error) {
 	// Get secret key from environment variable or use a default for development
 	secretKey := os.Getenv("JWT_SECRET_KEY")
@@ -23,15 +22,12 @@ func GenerateToken(userID, username string) (string, error) {
 		secretKey = "your-default-secret-key-change-in-production"
 	}
 
-	// Set token claims
+	// Set token claims without expiration
 	claims := &JWTClaims{
 		UserID:   userID,
 		Username: username,
 		RegisteredClaims: jwt.RegisteredClaims{
-			ExpiresAt: jwt.NewNumericDate(time.Now().Add(24 * time.Hour)), // Token expires after 24 hours
-			IssuedAt:  jwt.NewNumericDate(time.Now()),
-			NotBefore: jwt.NewNumericDate(time.Now()),
-			Issuer:    "trip-planner-api",
+			Issuer: "trip-planner-api",
 		},
 	}
 
