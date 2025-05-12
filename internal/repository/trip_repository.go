@@ -29,8 +29,16 @@ func (r *TripRepository) FindByID(id string) (*model.Trip, error) {
 
 func (r *TripRepository) FindAll(id string) ([]model.Trip, error) {
 	var trips []model.Trip
-	err := r.DB.Preload("User").Preload("Country").Preload("Companions").Preload("Bookmarks").Where("trips.user_id = ?", id).
-	Select("trips.*").Find(&trips).Error
+	err := r.DB.
+		Preload("User").
+		Preload("Country").
+		Preload("Companions").
+		Preload("Bookmarks").
+		Joins("LEFT JOIN trip_companions ON trips.id = trip_companions.trip_id").
+		Where("trips.user_id = ? OR trip_companions.user_id = ?", id, id).
+		Select("DISTINCT trips.*"). // Avoid duplicate rows
+		Find(&trips).Error
+
 	return trips, err
 }
 
