@@ -12,7 +12,7 @@ A Golang backend service for the TripTales application that provides API functio
 ### Step 1: Clone the repository
 
 ```bash
-git clone https://github.com/yourusername/triptales-backend.git
+git clone https://github.com/TripTalesTeam/triptales-backend.git
 cd triptales-backend
 ```
 
