@@ -64,7 +64,9 @@ func (r *TripRepository) FindByFriendTrips(userId string, countryName string) ([
 			Where("LOWER(countries.name) LIKE ?", "%"+strings.ToLower(countryName)+"%")
 	}
 
-	err := db.Find(&trips).Error
+	err := db.
+		Order("trips.created_at DESC").
+		Find(&trips).Error
 	return trips, err
 }
 
@@ -83,10 +85,11 @@ func (r *TripRepository) FindByBookmarkTrips(userId string, countryName string) 
 			Where("LOWER(countries.name) LIKE ?", "%"+strings.ToLower(countryName)+"%")
 	}
 
-	err := db.Find(&trips).Error
+	err := db.
+		Order("trips.created_at DESC").
+		Find(&trips).Error
 	return trips, err
 }
-
 
 func (r *TripRepository) FindByCompanionTrips(userId string) ([]model.Trip, error) {
 	var trips []model.Trip
